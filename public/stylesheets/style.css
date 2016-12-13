@@ -1,0 +1,38 @@
+body {
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  background-color: #EEEEEE;
+}
+
+a {
+  color: #00B7FF;
+}
+
+.action-item {
+  font-size: 16px;
+  text-align: center;
+  color: #777777;
+  display: block;
+  text-decoration: none !important; /* no underline */
+  outline: 0 !important;
+}
+
+.action-item span {
+  font-size: 30px;
+  color: #777777;
+  display: block;
+  text-decoration: none !important; /* no underline */
+  outline: 0 !important;
+}
+
+.status-true  {
+  color: green;
+}
+
+.status-false  {
+  color: red;
+}
+
+
+.action-item :hover {
+  color: #333333;
+}

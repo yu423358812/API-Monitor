@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html ng-app="homeApp">
+<head>
+    <title>healthMonitor</title>
+    <link href="/css/bootstrap.css" rel="stylesheet">
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+<body ng-controller="mainController">
+<!--navbar-->
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">API Monitor</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Apps</a></li>
+                <li><a href="#">Endpoints</a></li>
+                <li><a href="#">Jobs</a></li>
+                <li><a href="#">Users</a></li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+
+
+<!--control panel-->
+<div class="row">
+    <div class="col-md-10 col-md-offset-1">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <a href="" class="action-item" data-toggle="modal" data-target="#createApp" ng-click="getCreateAppInfo()">
+                            <span class="glyphicon glyphicon-record" aria-hidden="true" ></span>Create App
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="" class="action-item"  data-toggle="modal" data-target="#createApi" ng-click="getCreateApiInfo()">
+                            <span class="glyphicon glyphicon-stats" aria-hidden="true" ></span>Create Endpoint
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="" class="action-item"  data-toggle="modal" data-target="#createJob" ng-click="getCreateJobInfo()">
+                            <span class="glyphicon glyphicon-flash" aria-hidden="true" ></span>Create Job
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="" class="action-item" data-toggle="modal" data-target="#createUser">
+                            <span class="glyphicon glyphicon-user" aria-hidden="true" ></span>Create User
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--show jobs panel-->
+<div class="row">
+    <div class="col-md-10 col-md-offset-1">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <strong>Jobs</strong>
+                <strong style="margin-left: 20px;">Refresh: {{timer}} s</strong>
+                <input type="text" placeholder=" Search Jobs for.." style="float: right;">
+            </div>
+            <div class="panel-body">
+                <table class="table table-striped table-hover">
+                    <tr>
+                        <td><strong>Name</strong></td>
+                        <td><strong>Owner</strong></td>
+                        <td><strong>Endpoints</strong></td>
+                        <td><strong>Status</strong></td>
+                        <td><strong>LastUpdated</strong></td>
+                        <td><strong>Action</strong></td>
+                    </tr>
+                    <tr ng-repeat="showJob in showJobs">
+                        <td>{{showJob.job}}</td>
+                        <td>{{showJob.owner}}</td>
+                        <td>{{showJob.num}}</td>
+                        <td><span class="{{changeStatus(showJob.status)}}" aria-hidden="true"></span></td>
+                        <td>{{(showJob.createdDate).substr(0,19)}}</td>
+                        <td>
+                            <a class="btn btn-info" href="#" role="button" ng-click="jobEndpointsView(showJob)">
+                                <span class="glyphicon glyphicon-zoom-in" aria-hidden="true" ></span>
+                            </a>
+                            <a class="btn btn-success" href="#" role="button">
+                                <span class="glyphicon glyphicon-cog" aria-hidden="true" ></span>
+                            </a>
+                            <a class="btn btn-danger" href="#" role="button" data-toggle="modal" data-target="#deleteJob" ng-click="passDeleteJob(showJob)">
+                                <span class="glyphicon glyphicon-trash" aria-hidden="true" ></span>
+                            </a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!--show apps panel-->
+<div class="row">
+    <div class="col-md-10 col-md-offset-1">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <strong>Apps</strong>
+                <input type="text" placeholder=" Search Apps for.." style="float: right;">
+            </div>
+            <div class="panel-body">
+                <table class="table table-striped table-hover">
+                    <tr>
+                        <td><strong>Name</strong></td>
+                        <td><strong>Owner</strong></td>
+                        <td><strong>Endpoints</strong></td>
+                        <td><strong>Status</strong></td>
+                        <td><strong>Action</strong></td>
+                    </tr>
+                    <tr ng-repeat="showApp in showApps">
+                        <td>{{showApp.appName}}</td>
+                        <td>{{showApp.owner}}</td>
+                        <td>{{showApp.num}}</td>
+                        <td><span class="{{changeStatus(showApp.status)}}" aria-hidden="true"></span></td>
+                        <td>
+                            <a class="btn btn-info" href="#" role="button" ng-click="appEndpointsView(showApp)">
+                                <span class="glyphicon glyphicon-zoom-in" aria-hidden="true" ></span>
+                            </a>
+                            <a class="btn btn-success" href="#" role="button">
+                                <span class="glyphicon glyphicon-cog" aria-hidden="true" ></span>
+                            </a>
+                            <a class="btn btn-danger" href="#" role="button" data-toggle="modal" data-target="#deleteApp" ng-click="passDeleteApp(showApp)">
+                                <span class="glyphicon glyphicon-trash" aria-hidden="true" ></span>
+                            </a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Create App Modal-->
+<div class="modal fade" id="createApp" tabindex="-1" style="margin-top:10%;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #5bc0de">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Create App</h4>
+            </div>
+            <form>
+                <div class="modal-body">
+                        <div class="form-group">
+                            <label for="appName">App Name</label>
+                            <input type="text" class="form-control" id="appName" placeholder="appName" name="appName" ng-model="addApp.appName">
+                        </div>
+                        <div class="form-group">
+                            <label for="owner">Owner</label>
+                            <select class="form-control" id="owner" name="owner" ng-model="addApp.owner">
+                                <option ng-repeat="user in users">{{user.name}}</option>
+                            </select>
+                        </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" ng-click="createApp()" data-dismiss="modal">Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!--deleteApp modal-->
+<div class="modal fade" id="deleteApp" tabindex="-1" style="margin-top:10%;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #5bc0de">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">You really want delete it?</h4>
+            </div>
+            <form>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" ng-click="deleteApp(manipulateApp)" data-dismiss="modal">Yes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!--deleteJob modal-->
+<div class="modal fade" id="deleteJob" tabindex="-1" style="margin-top:10%;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #5bc0de">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">You really want delete it?</h4>
+            </div>
+            <form>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" ng-click="deleteJob(manipulateJob)" data-dismiss="modal">Yes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!--Create Api  Modal-->
+<div class="modal fade" id="createApi" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #5bc0de">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Create Api Endpoint</h4>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="appName">App Name</label>
+                        <select class="form-control" id="appName" name="appName" ng-model="addApi.appName" ng-disabled="blockApp">
+                            <option></option>
+                            <option ng-repeat="app in apps">{{app.appName}}</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="job">Job Name</label>
+                        <select class="form-control" id="job" name="job" ng-model="addApi.job" ng-disabled="blockJob">
+                            <option></option>
+                            <option ng-repeat="job in jobs">{{job.job}}</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="developer">Developer</label>
+                        <select class="form-control" id="developer" name="developer" ng-model="addApi.contact">
+                            <option ng-repeat="user in users">{{user.name}}</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="url">URL</label>
+                        <input type="text" class="form-control" id="url" placeholder="url" name="url" ng-model="addApi.url">
+                    </div>
+                    <div class="form-group">
+                        <label for="summary">Endpoint Summary</label>
+                        <input type="text" class="form-control" id="summary" placeholder="summary" name="summary" ng-model="addApi.summary">
+                    </div>
+                    <div class="form-group">
+                        <label for="method">Method</label>
+                        <select class="form-control" id="method" name="method" ng-model="addApi.method">
+                            <option>GET</option>
+                            <option>POST</option>
+                            <option>PUT</option>
+                            <option>DELETE</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="sequence">Execute Sequence(input a number)</label>
+                        <input type="text" class="form-control" id="sequence" placeholder="sequence" name="sequence" ng-model="addApi.sequence"  ng-disabled="blockSeq">
+                    </div>
+                    <div class="form-group">
+                        <label for="header">Request Header</label>
+                        <textarea class="form-control" rows="5" id="header" name="header" ng-model="addApi.header"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="body">Request Body</label>
+                        <textarea class="form-control" rows="5" id="cbody" name="body" ng-model="addApi.body"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" ng-click="createApi()" data-dismiss="modal">Create</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--Create Job Modal-->
+<div class="modal fade" id="createJob" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #5bc0de">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Create Job</h4>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="job">Job Name</label>
+                        <input type="text" class="form-control" id="job" placeholder="job" name="job" ng-model="addJob.job">
+                    </div>
+                    <div class="form-group">
+                        <label for="developer">Developer</label>
+                        <select class="form-control" id="developer" name="developer" ng-model="addJob.owner">
+                            <option ng-repeat="user in users">{{user.name}}</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="summary">Summary</label>
+                        <input type="text" class="form-control" id="summary" placeholder="summary" name="summary" ng-model="addJob.summary">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" ng-click="createJob()" data-dismiss="modal">Sumbit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Create User Modal-->
+<div class="modal fade" id="createUser" tabindex="-1" style="margin-top:10%;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #5bc0de">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Create User</h4>
+            </div>
+            <form>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control" id="name" placeholder="name" name="name" ng-model="addUser.name">
+                    </div>
+                    <div class="form-group">
+                        <label for="cell">Cell</label>
+                        <input type="text" class="form-control" id="cell" placeholder="cell" name="cell" ng-model="addUser.cell">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="text" class="form-control" id="email" placeholder="email" name="email" ng-model="addUser.email">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="close()">Close</button>
+                    <button type="button" class="btn btn-primary" ng-click="createUser()" data-dismiss="modal">Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript" src="/js/jquery.min.js"></script>
+<script type="text/javascript" src="/js/angular.min.js"></script>
+<script type="text/javascript" src="/js/controller/homeApp.js"></script>
+<script type="text/javascript" src="/js/bootstrap.js"></script>
+</body>
+</html>
